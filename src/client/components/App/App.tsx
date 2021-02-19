@@ -1,7 +1,7 @@
 import React from 'react'
 import { hot } from 'react-hot-loader'
 
-import Widget from 'components/Widget/index'
+import { Widget } from 'components/index'
 
 const App = () => <Widget />
 

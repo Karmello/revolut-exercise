@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 module.exports = {
-  entry: './src/index.tsx',
+  entry: './src/client/index.tsx',
   mode: 'development',
   module: {
     rules: [
@@ -15,6 +15,13 @@ module.exports = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+        },
       },
     ],
   },
