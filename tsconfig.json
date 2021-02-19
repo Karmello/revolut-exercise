@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
     "outDir": "./dist/",
     "noImplicitAny": true,
     "module": "es6",
@@ -7,6 +8,9 @@
     "jsx": "react",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "paths": {
+      "components/*": ["client/components/*"]
+    }
   }
 }
