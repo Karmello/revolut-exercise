@@ -1,4 +1,4 @@
 export default {
   exchange: 'Exchange',
-  currentAmountText: (value: string) => `You have ${value}`,
+  currentAmountText: (formattedAmount: string) => `You have ${formattedAmount}`,
 }

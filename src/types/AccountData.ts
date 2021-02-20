@@ -1,6 +1,8 @@
+import Currency from './Currency'
+
 type AccountData = {
-  currency: string
-  amount: string
+  currency: Currency
+  amount: number
 }
 
 export default AccountData

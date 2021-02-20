@@ -13,7 +13,8 @@
       "dictionary": ["client/dictionary"],
       "types/*": ["types/*"],
       "components/*": ["client/components/*"],
-      "requests/*": ["client/requests/*"]
+      "requests/*": ["client/requests/*"],
+      "helpers/*": ["client/helpers/*"]
     }
   }
 }

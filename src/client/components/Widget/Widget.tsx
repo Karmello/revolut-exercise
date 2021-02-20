@@ -3,21 +3,23 @@ import { hot } from 'react-hot-loader'
 import { Grid, Segment, Button, Loader } from 'semantic-ui-react'
 
 import AccountData from 'types/AccountData'
+import Currency from 'types/Currency'
+import { getAccountsRequest } from 'requests/index'
 import ViewSwitch from './ViewSwitch/ViewSwitch'
 import dict from 'dictionary'
 
-type Props = {
-  getInitialData: () => Promise<{ data: AccountData[] }>
-}
-
-const Widget = ({ getInitialData }: Props) => {
+const Widget = () => {
   const [accountsData, setAccountsData] = useState<AccountData[]>(null)
   const [isFetching, setIsFetching] = useState<boolean>(true)
+  const [baseCurrency, setBaseCurrency] = useState<Currency>(null)
+  const [targetCurrency, setTargetCurrency] = useState<Currency>(null)
 
   useEffect(() => {
     ;(async () => {
-      const res = await getInitialData()
+      const res = await getAccountsRequest()
       setAccountsData(res.data)
+      setBaseCurrency(res.data[0].currency)
+      setTargetCurrency(res.data[1].currency)
       setIsFetching(false)
     })()
   }, [])
@@ -39,13 +41,23 @@ const Widget = ({ getInitialData }: Props) => {
             </Grid.Column>
           </Grid>
         </Segment>
-        {!isFetching && (
+        {accountsData && baseCurrency && targetCurrency && (
           <>
             <Segment attached padded>
-              <ViewSwitch accountsData={accountsData} />
+              <ViewSwitch
+                accountsData={accountsData}
+                activeCurrency={baseCurrency}
+                setActiveCurrency={setBaseCurrency}
+                exchangedCurrency={targetCurrency}
+              />
             </Segment>
             <Segment attached="bottom" padded>
-              <ViewSwitch accountsData={accountsData} />
+              <ViewSwitch
+                accountsData={accountsData}
+                activeCurrency={targetCurrency}
+                setActiveCurrency={setTargetCurrency}
+                exchangedCurrency={baseCurrency}
+              />
             </Segment>
           </>
         )}
