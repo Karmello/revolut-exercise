@@ -1,8 +1,8 @@
 import Currency from 'types/Currency'
 import RatesData from 'types/RatesData'
 
-export const getConvertCurrencyUrl = (base: string) =>
-  `https://api.exchangeratesapi.io/latest?base=${base}`
+export const getConvertCurrencyUrl = (base: string, symbols: string) =>
+  `https://api.exchangeratesapi.io/latest?base=${base}&symbols=${symbols}`
 
 export const formatCurrency = (currency: Currency, amount: number) =>
   new Intl.NumberFormat('en-US', {
@@ -17,5 +17,5 @@ export const getComparedRatesString = (
 ) =>
   `${formatCurrency(currency1, 1)} = ${formatCurrency(
     currency2,
-    ratesData.rates[currency2] || 1
+    ratesData.rates[currency2]
   )}`

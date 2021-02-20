@@ -35,7 +35,10 @@ const ViewSwitch = ({
 
   useEffect(() => {
     ;(async () => {
-      const res = await convertCurrencyRequest(activeCurrency)
+      const res = await convertCurrencyRequest(
+        activeCurrency,
+        exchangedCurrency
+      )
       setComparedRatesString(
         getComparedRatesString(res.data, activeCurrency, exchangedCurrency)
       )
