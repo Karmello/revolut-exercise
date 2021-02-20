@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
 import { hot } from 'react-hot-loader'
-import { Container, Icon } from 'semantic-ui-react'
-import values from 'lodash/values'
+import { Container, Icon, Divider } from 'semantic-ui-react'
 
+import AccountData from 'types/AccountData'
 import AccountView from './../AccountView/AccountView'
-
-import Currency from 'types/Currency'
 
 const activeIconColor = 'blue'
 const inactiveIconColor = 'yellow'
@@ -16,7 +14,11 @@ const iconBasicProps = {
   style: { cursor: 'pointer' },
 } as any
 
-const ViewSwitch = () => {
+type Props = {
+  accountsData: AccountData[]
+}
+
+const ViewSwitch = ({ accountsData }: Props) => {
   const [activeViewNo, setActiveViewNo] = useState<number>(1)
 
   const getIconColor = (viewNo: number) =>
@@ -24,25 +26,20 @@ const ViewSwitch = () => {
 
   const onSwitchActiveView = (viewNo: number) => () => setActiveViewNo(viewNo)
 
+  if (!accountsData) return null
+
   return (
     <>
-      <AccountView currency={values(Currency)[activeViewNo - 1]} />
+      <AccountView data={accountsData[activeViewNo - 1]} />
+      <Divider hidden />
       <Container textAlign="center">
-        <Icon
-          color={getIconColor(1)}
-          onClick={onSwitchActiveView(1)}
-          {...iconBasicProps}
-        />
-        <Icon
-          color={getIconColor(2)}
-          onClick={onSwitchActiveView(2)}
-          {...iconBasicProps}
-        />
-        <Icon
-          color={getIconColor(3)}
-          onClick={onSwitchActiveView(3)}
-          {...iconBasicProps}
-        />
+        {accountsData.map((item, index) => (
+          <Icon
+            color={getIconColor(index + 1)}
+            onClick={onSwitchActiveView(index + 1)}
+            {...iconBasicProps}
+          />
+        ))}
       </Container>
     </>
   )

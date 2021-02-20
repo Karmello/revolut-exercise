@@ -2,15 +2,17 @@ import React from 'react'
 import { hot } from 'react-hot-loader'
 import { Header } from 'semantic-ui-react'
 
-import Currency from 'types/Currency'
+import AccountData from 'types/AccountData'
+import dict from 'dictionary'
 
 type Props = {
-  currency: Currency
+  data: AccountData
 }
 
-const AccountView = ({ currency }: Props) => (
+const AccountView = ({ data }: Props) => (
   <>
-    <Header as="h1" content={currency} />
+    <Header as="h1" content={data.currency} />
+    <Header as="h4" content={dict.currentAmountText(data.amount)} />
   </>
 )
 
