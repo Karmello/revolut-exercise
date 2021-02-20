@@ -1,10 +1,17 @@
 const path = require('path')
 const webpack = require('webpack')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
   entry: './src/client/index.tsx',
   mode: 'development',
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '../dist/styles.css',
+    }),
+  ],
   module: {
     rules: [
       {
@@ -13,21 +20,24 @@ module.exports = {
         loader: 'ts-loader',
       },
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        test: /\.css$/i,
+        include: /[/\\]node_modules[/\\]semantic-ui-css[/\\]/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
-        test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
+        test: /\.(ttf|svg|png|eot|woff|woff2)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            esModule: false,
+          },
         },
       },
     ],
   },
   resolve: {
     plugins: [new TsconfigPathsPlugin()],
-    extensions: ['*', '.ts', '.tsx', '.js'],
+    extensions: ['.js', '.ts', '.tsx'],
   },
   output: {
     path: path.resolve(__dirname, 'dist/'),
@@ -40,5 +50,4 @@ module.exports = {
     publicPath: 'http://localhost:3000/dist/',
     hotOnly: true,
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
 }

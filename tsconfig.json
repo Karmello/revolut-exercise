@@ -10,7 +10,9 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "Node",
     "paths": {
-      "components/*": ["client/components/*"]
+      "components/*": ["client/components/*"],
+      "types/*": ["types/*"],
+      "dictionary": ["client/dictionary"]
     }
   }
 }
