@@ -21,11 +21,12 @@ const AccountView = ({ data, comparedRatesString }: Props) => (
           content={dict.currentAmountText(
             formatCurrency(data.currency, data.amount)
           )}
+          color="blue"
         />
       </Grid.Column>
       {comparedRatesString !== null && (
         <Grid.Column textAlign="right">
-          <Header as="h4" content={comparedRatesString} />
+          <Header as="h4" content={comparedRatesString} color="blue" />
         </Grid.Column>
       )}
     </Grid>
