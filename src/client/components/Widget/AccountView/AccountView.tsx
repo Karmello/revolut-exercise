@@ -1,34 +1,35 @@
 import React from 'react'
 import { hot } from 'react-hot-loader'
-import { Header, Grid } from 'semantic-ui-react'
+import { Header, Grid, Loader } from 'semantic-ui-react'
 
-import AccountData from 'types/AccountData'
+import { Currency } from 'types'
 import { formatCurrency } from 'helpers/index'
 import dict from 'dictionary'
 
 type Props = {
-  data: AccountData
-  comparedRatesString: string
+  currency: Currency
+  amount: number
+  exchangeInfo: string
 }
 
-const AccountView = ({ data, comparedRatesString }: Props) => (
+const AccountView = ({ currency, amount, exchangeInfo }: Props) => (
   <>
-    <Header as="h1" content={data.currency} />
-    <Grid columns={comparedRatesString !== null ? 2 : 1}>
+    <Header as="h1" content={currency} />
+    <Grid columns={2}>
       <Grid.Column>
         <Header
           as="h4"
-          content={dict.currentAmountText(
-            formatCurrency(data.currency, data.amount)
-          )}
+          content={dict.currentAmountText(formatCurrency(currency, amount))}
           color="blue"
         />
       </Grid.Column>
-      {comparedRatesString !== null && (
-        <Grid.Column textAlign="right">
-          <Header as="h4" content={comparedRatesString} color="blue" />
-        </Grid.Column>
-      )}
+      <Grid.Column textAlign="right">
+        {exchangeInfo ? (
+          <Header as="h4" content={exchangeInfo} color="blue" />
+        ) : (
+          <Loader active={!exchangeInfo} size="tiny" />
+        )}
+      </Grid.Column>
     </Grid>
   </>
 )

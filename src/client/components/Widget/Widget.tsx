@@ -2,13 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { hot } from 'react-hot-loader'
 import { Grid, Segment, Button, Divider } from 'semantic-ui-react'
 
-import { AccountData, Currency, Direction, CurrencySection } from 'types'
-import { getAccountsRequest } from 'requests/index'
+import {
+  AccountData,
+  Currency,
+  Direction,
+  CurrencySection,
+  RatesData,
+} from 'types'
+
+import { getAccountsRequest, convertCurrencyRequest } from 'requests/index'
 import ViewSwitch from './ViewSwitch/ViewSwitch'
 import dict from 'dictionary'
 
 const Widget = () => {
   const [accountsData, setAccountsData] = useState<AccountData[]>(null)
+  const [ratesData, setRatesData] = useState<any>(null)
   const [baseCurrency, setBaseCurrency] = useState<Currency>(null)
   const [targetCurrency, setTargetCurrency] = useState<Currency>(null)
 
@@ -20,6 +28,19 @@ const Widget = () => {
       setTargetCurrency(res.data[1].currency)
     })()
   }, [])
+
+  useEffect(() => {
+    if (accountsData) {
+      ;(async () => {
+        const res = await convertCurrencyRequest()
+        setRatesData({
+          [res[0].data.base]: res[0].data.rates,
+          [res[1].data.base]: res[1].data.rates,
+          [res[2].data.base]: res[2].data.rates,
+        })
+      })()
+    }
+  }, [accountsData])
 
   const onNavigate = (section: CurrencySection, direction: Direction) => {
     const currentIndex = accountsData.findIndex(
@@ -66,17 +87,19 @@ const Widget = () => {
               <ViewSwitch
                 type={CurrencySection.Base}
                 accountsData={accountsData}
-                activeCurrency={baseCurrency}
-                exchangedCurrency={targetCurrency}
+                ratesData={ratesData}
                 onNavigate={onNavigate}
+                currency1={baseCurrency}
+                currency2={targetCurrency}
               />
               <Divider section />
               <ViewSwitch
                 type={CurrencySection.Target}
                 accountsData={accountsData}
-                activeCurrency={targetCurrency}
-                exchangedCurrency={baseCurrency}
+                ratesData={ratesData}
                 onNavigate={onNavigate}
+                currency1={targetCurrency}
+                currency2={baseCurrency}
               />
             </>
           ) : (

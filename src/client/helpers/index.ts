@@ -10,12 +10,12 @@ export const formatCurrency = (currency: Currency, amount: number) =>
     currency,
   }).format(amount)
 
-export const getComparedRatesString = (
+export const getExchangeInfo = (
   ratesData: RatesData,
   currency1: Currency,
   currency2: Currency
 ) =>
   `${formatCurrency(currency1, 1)} = ${formatCurrency(
     currency2,
-    ratesData.rates[currency2]
+    ratesData[currency1][currency2]
   )}`
