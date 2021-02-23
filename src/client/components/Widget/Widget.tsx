@@ -61,8 +61,8 @@ const Widget = () => {
           [res[1].data.base]: res[1].data.rates,
           [res[2].data.base]: res[2].data.rates,
         })
+        timeoutId = setTimeout(() => setRatesData(null), 10000)
       })()
-      timeoutId = setTimeout(() => setRatesData(null), 10000)
     }
   }, [accountsData, ratesData])
 
