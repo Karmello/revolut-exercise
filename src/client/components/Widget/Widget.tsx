@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { hot } from 'react-hot-loader'
 import { Grid, Segment, Button, Divider } from 'semantic-ui-react'
 
-import AccountData from 'types/AccountData'
-import Currency from 'types/Currency'
+import { AccountData, Currency, Direction, CurrencySection } from 'types'
 import { getAccountsRequest } from 'requests/index'
 import ViewSwitch from './ViewSwitch/ViewSwitch'
 import dict from 'dictionary'
@@ -22,6 +21,42 @@ const Widget = () => {
     })()
   }, [])
 
+  const onNavigate = (section: CurrencySection, direction: Direction) => {
+    const currentIndex = accountsData.findIndex(
+      item =>
+        item.currency ===
+        (section === CurrencySection.Base ? baseCurrency : targetCurrency)
+    )
+    let newCurrency
+
+    if (direction === Direction.Prev) {
+      newCurrency =
+        accountsData[
+          currentIndex > 0 ? currentIndex - 1 : accountsData.length - 1
+        ].currency
+    } else if (direction === Direction.Next) {
+      newCurrency =
+        accountsData[
+          currentIndex < accountsData.length - 1 ? currentIndex + 1 : 0
+        ].currency
+    }
+
+    if (section === CurrencySection.Base) {
+      setBaseCurrency(newCurrency)
+      if (targetCurrency === newCurrency)
+        setTargetCurrency(
+          accountsData.find(item => item.currency !== targetCurrency).currency
+        )
+    } else if (section === CurrencySection.Target) {
+      setTargetCurrency(newCurrency)
+      if (baseCurrency === newCurrency) {
+        setBaseCurrency(
+          accountsData.find(item => item.currency !== baseCurrency).currency
+        )
+      }
+    }
+  }
+
   return (
     <Grid centered>
       <Grid.Column>
@@ -29,17 +64,19 @@ const Widget = () => {
           {accountsData && baseCurrency && targetCurrency ? (
             <>
               <ViewSwitch
+                type={CurrencySection.Base}
                 accountsData={accountsData}
                 activeCurrency={baseCurrency}
-                setActiveCurrency={setBaseCurrency}
                 exchangedCurrency={targetCurrency}
+                onNavigate={onNavigate}
               />
               <Divider section />
               <ViewSwitch
+                type={CurrencySection.Target}
                 accountsData={accountsData}
                 activeCurrency={targetCurrency}
-                setActiveCurrency={setTargetCurrency}
                 exchangedCurrency={baseCurrency}
+                onNavigate={onNavigate}
               />
             </>
           ) : (
