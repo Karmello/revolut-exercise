@@ -12,6 +12,7 @@
     "paths": {
       "dictionary": ["client/dictionary"],
       "types/*": ["types/*"],
+      "mocks/*": ["mocks/*"],
       "components/*": ["client/components/*"],
       "requests/*": ["client/requests/*"],
       "helpers/*": ["client/helpers/*"]

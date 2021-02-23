@@ -19,3 +19,15 @@ export const getExchangeInfo = (
     currency2,
     ratesData[currency1][currency2]
   )}`
+
+export const getTargetAmountDiff = (
+  amountToExchange: string,
+  ratesData: RatesData,
+  baseCurrency: Currency,
+  targetCurrency: Currency
+) =>
+  Math.round(
+    (Number(amountToExchange) * ratesData[baseCurrency][targetCurrency] +
+      Number.EPSILON) *
+      100
+  ) / 100

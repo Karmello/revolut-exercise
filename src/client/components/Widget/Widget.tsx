@@ -1,24 +1,37 @@
 import React, { useEffect, useState } from 'react'
 import { hot } from 'react-hot-loader'
-import { Grid, Segment, Button, Divider } from 'semantic-ui-react'
 
 import {
-  AccountData,
-  Currency,
-  Direction,
-  CurrencySection,
-  RatesData,
-} from 'types'
+  Grid,
+  Segment,
+  Button,
+  Divider,
+  InputOnChangeData,
+  Loader,
+  Icon,
+} from 'semantic-ui-react'
 
-import { getAccountsRequest, convertCurrencyRequest } from 'requests/index'
-import ViewSwitch from './ViewSwitch/ViewSwitch'
+import {
+  getAccountsRequest,
+  convertCurrencyRequest,
+  postAmountRequest,
+} from 'requests/index'
+
+import { getTargetAmountDiff } from 'helpers/index'
+
+import { AccountData, Currency, Direction, CurrencySection } from 'types'
 import dict from 'dictionary'
+import ViewSwitch from './ViewSwitch/ViewSwitch'
 
 const Widget = () => {
   const [accountsData, setAccountsData] = useState<AccountData[]>(null)
   const [ratesData, setRatesData] = useState<any>(null)
   const [baseCurrency, setBaseCurrency] = useState<Currency>(null)
   const [targetCurrency, setTargetCurrency] = useState<Currency>(null)
+  const [amountToExchange, setAmountToExchange] = useState<string>('0')
+  const [makingExchangeRequest, setMakingExchangeRequest] = useState<boolean>(
+    false
+  )
 
   useEffect(() => {
     ;(async () => {
@@ -43,6 +56,7 @@ const Widget = () => {
   }, [accountsData])
 
   const onNavigate = (section: CurrencySection, direction: Direction) => {
+    setAmountToExchange('0')
     const currentIndex = accountsData.findIndex(
       item =>
         item.currency ===
@@ -78,6 +92,38 @@ const Widget = () => {
     }
   }
 
+  const onFormInputChange = (e: React.ChangeEvent, data: InputOnChangeData) => {
+    if (isNaN(Number(data.value))) {
+      setAmountToExchange('0')
+    } else if (data.value.includes('.')) {
+      const parts = data.value.split('.')
+      if (parts[1].length > 2) {
+        parts[1] = parts[1].substr(0, 2)
+        setAmountToExchange(parts.join('.'))
+      } else {
+        setAmountToExchange(data.value)
+      }
+    } else {
+      setAmountToExchange(data.value)
+    }
+  }
+
+  const onExchangeClick = async () => {
+    setMakingExchangeRequest(true)
+    const res = await postAmountRequest({
+      [baseCurrency]: -Number(amountToExchange),
+      [targetCurrency]: getTargetAmountDiff(
+        amountToExchange,
+        ratesData,
+        baseCurrency,
+        targetCurrency
+      ),
+    })
+    setAccountsData(res.data)
+    setAmountToExchange('0')
+    setMakingExchangeRequest(false)
+  }
+
   return (
     <Grid centered>
       <Grid.Column>
@@ -91,7 +137,14 @@ const Widget = () => {
                 onNavigate={onNavigate}
                 currency1={baseCurrency}
                 currency2={targetCurrency}
+                formValue={amountToExchange.toString()}
+                onFormInputChange={onFormInputChange}
+                makingExchangeRequest={makingExchangeRequest}
               />
+              <Divider section />
+              <div style={{ textAlign: 'center' }}>
+                <Icon name="arrow down" />
+              </div>
               <Divider section />
               <ViewSwitch
                 type={CurrencySection.Target}
@@ -100,6 +153,17 @@ const Widget = () => {
                 onNavigate={onNavigate}
                 currency1={targetCurrency}
                 currency2={baseCurrency}
+                formValue={
+                  ratesData
+                    ? getTargetAmountDiff(
+                        amountToExchange,
+                        ratesData,
+                        baseCurrency,
+                        targetCurrency
+                      ).toString()
+                    : '0'
+                }
+                makingExchangeRequest={makingExchangeRequest}
               />
             </>
           ) : (
@@ -107,12 +171,25 @@ const Widget = () => {
           )}
         </Segment>
         <Segment attached="bottom" secondary>
-          <Grid columns={1}>
+          <Grid columns={2}>
+            <Grid.Column verticalAlign="middle">
+              <Loader inline active={makingExchangeRequest} size="small" />
+            </Grid.Column>
             <Grid.Column textAlign="right">
               <Button
                 content={dict.exchange}
                 color="blue"
-                disabled={!accountsData}
+                disabled={
+                  makingExchangeRequest ||
+                  !accountsData ||
+                  !baseCurrency ||
+                  !amountToExchange ||
+                  Number(amountToExchange) === 0 ||
+                  Number(amountToExchange) >
+                    accountsData.find(item => item.currency === baseCurrency)
+                      .amount
+                }
+                onClick={onExchangeClick}
               />
             </Grid.Column>
           </Grid>
