@@ -17,15 +17,23 @@ import {
   postAmountRequest,
 } from 'requests/index'
 
-import { getTargetAmountDiff } from 'helpers/index'
+import {
+  AccountData,
+  Currency,
+  Direction,
+  CurrencySection,
+  RatesData,
+} from 'types'
 
-import { AccountData, Currency, Direction, CurrencySection } from 'types'
+import { getTargetAmountDiff } from 'helpers/index'
 import dict from 'dictionary'
 import ViewSwitch from './ViewSwitch/ViewSwitch'
 
+let timeoutId: NodeJS.Timeout
+
 const Widget = () => {
   const [accountsData, setAccountsData] = useState<AccountData[]>(null)
-  const [ratesData, setRatesData] = useState<any>(null)
+  const [ratesData, setRatesData] = useState<RatesData>(null)
   const [baseCurrency, setBaseCurrency] = useState<Currency>(null)
   const [targetCurrency, setTargetCurrency] = useState<Currency>(null)
   const [amountToExchange, setAmountToExchange] = useState<string>('0')
@@ -40,10 +48,12 @@ const Widget = () => {
       setBaseCurrency(res.data[0].currency)
       setTargetCurrency(res.data[1].currency)
     })()
+    return () => clearTimeout(timeoutId)
   }, [])
 
   useEffect(() => {
-    if (accountsData) {
+    if (accountsData && !ratesData) {
+      if (timeoutId) clearTimeout(timeoutId)
       ;(async () => {
         const res = await convertCurrencyRequest()
         setRatesData({
@@ -52,8 +62,9 @@ const Widget = () => {
           [res[2].data.base]: res[2].data.rates,
         })
       })()
+      timeoutId = setTimeout(() => setRatesData(null), 10000)
     }
-  }, [accountsData])
+  }, [accountsData, ratesData])
 
   const onNavigate = (section: CurrencySection, direction: Direction) => {
     setAmountToExchange('0')
@@ -109,6 +120,7 @@ const Widget = () => {
   }
 
   const onExchangeClick = async () => {
+    clearTimeout(timeoutId)
     setMakingExchangeRequest(true)
     const res = await postAmountRequest({
       [baseCurrency]: -Number(amountToExchange),
@@ -122,6 +134,7 @@ const Widget = () => {
     setAccountsData(res.data)
     setAmountToExchange('0')
     setMakingExchangeRequest(false)
+    setRatesData(null)
   }
 
   return (
@@ -184,6 +197,7 @@ const Widget = () => {
                   !accountsData ||
                   !baseCurrency ||
                   !amountToExchange ||
+                  !ratesData ||
                   Number(amountToExchange) === 0 ||
                   Number(amountToExchange) >
                     accountsData.find(item => item.currency === baseCurrency)

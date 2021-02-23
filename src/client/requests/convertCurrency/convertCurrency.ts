@@ -4,7 +4,7 @@ import { Currency } from 'types'
 import { getConvertCurrencyUrl } from 'helpers/index'
 
 export default async () => {
-  await new Promise(resolve => setTimeout(resolve, 500))
+  await new Promise(resolve => setTimeout(resolve, 250))
   return Promise.all([
     axios.get(
       getConvertCurrencyUrl(Currency.EUR, `${Currency.GBP},${Currency.USD}`)

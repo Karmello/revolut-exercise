@@ -35,18 +35,27 @@ const AccountView = ({
   <>
     <Header as="h1" content={currency} />
     <Grid columns={2}>
-      <Grid.Column>
+      <Grid.Column style={{ height: '50px' }}>
         <Header
           as="h4"
           content={dict.currentAmountText(formatCurrency(currency, amount))}
           color="blue"
         />
       </Grid.Column>
-      <Grid.Column textAlign="right">
+      <Grid.Column
+        textAlign="right"
+        style={{ height: '50px' }}
+        verticalAlign="top"
+      >
         {exchangeInfo ? (
           <Header as="h4" content={exchangeInfo} color="blue" />
         ) : (
-          <Loader active={!exchangeInfo} size="tiny" />
+          <Loader
+            active={!exchangeInfo}
+            size="tiny"
+            inline
+            style={{ textAlign: 'right' }}
+          />
         )}
       </Grid.Column>
     </Grid>
