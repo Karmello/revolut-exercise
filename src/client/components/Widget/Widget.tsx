@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { hot } from 'react-hot-loader'
+import { act } from 'react-dom/test-utils'
 
 import {
   Grid,
@@ -44,9 +45,11 @@ const Widget = () => {
   useEffect(() => {
     ;(async () => {
       const res = await getAccountsRequest()
-      setAccountsData(res.data)
-      setBaseCurrency(res.data[0].currency)
-      setTargetCurrency(res.data[1].currency)
+      act(() => {
+        setAccountsData(res.data)
+        setBaseCurrency(res.data[0].currency)
+        setTargetCurrency(res.data[1].currency)
+      })
     })()
     return () => clearTimeout(timeoutId)
   }, [])
@@ -56,12 +59,14 @@ const Widget = () => {
       if (timeoutId) clearTimeout(timeoutId)
       ;(async () => {
         const res = await convertCurrencyRequest()
-        setRatesData({
-          [res[0].data.base]: res[0].data.rates,
-          [res[1].data.base]: res[1].data.rates,
-          [res[2].data.base]: res[2].data.rates,
+        act(() => {
+          setRatesData({
+            [res[0].data.base]: res[0].data.rates,
+            [res[1].data.base]: res[1].data.rates,
+            [res[2].data.base]: res[2].data.rates,
+          })
+          timeoutId = setTimeout(() => setRatesData(null), 10000)
         })
-        timeoutId = setTimeout(() => setRatesData(null), 10000)
       })()
     }
   }, [accountsData, ratesData])

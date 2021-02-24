@@ -60,14 +60,16 @@ const ViewSwitch = ({
       />
     </Grid.Column>
     <Grid.Column verticalAlign="middle" width={3} textAlign="center">
-      <Button
-        icon
-        basic
-        onClick={() => onNavigate(type, Direction.Next)}
-        disabled={makingExchangeRequest}
-      >
-        <Icon name="arrow right" />
-      </Button>
+      <div className="buttonNext">
+        <Button
+          icon
+          basic
+          onClick={() => onNavigate(type, Direction.Next)}
+          disabled={makingExchangeRequest}
+        >
+          <Icon name="arrow right" />
+        </Button>
+      </div>
     </Grid.Column>
   </Grid>
 )

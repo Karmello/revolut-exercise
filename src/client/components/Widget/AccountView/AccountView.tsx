@@ -33,7 +33,9 @@ const AccountView = ({
   makingExchangeRequest,
 }: Props) => (
   <>
-    <Header as="h1" content={currency} />
+    <div className="activeCurrency">
+      <Header as="h1" content={currency} />
+    </div>
     <Grid columns={2}>
       <Grid.Column style={{ height: '50px' }}>
         <Header
